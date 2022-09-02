@@ -1,0 +1,22 @@
+{
+  "name": "functional-benchmarks",
+  "version": "0.1.0",
+  "description": "Functional Benchmarks =====================",
+  "main": "benchmark.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kindelia/functional_benchmarks.git"
+  },
+  "author": "VictorTaelin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kindelia/functional_benchmarks/issues"
+  },
+  "homepage": "https://github.com/kindelia/functional_benchmarks#readme",
+  "dependencies": {
+    "chartjs-node-canvas": "^4.1.6"
+  }
+}

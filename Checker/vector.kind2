@@ -1,0 +1,7 @@
+Import { Base }
+
+Main {
+  let vec = Base.nil
+  let vec = Base.cons Type vec //REPEAT
+  vec
+}

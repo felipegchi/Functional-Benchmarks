@@ -1,0 +1,10 @@
+Import { Base }
+
+Size : Base.Church.Nat
+Size = Base.Church.N1
+
+Main :
+  let a = Base.Church.force_tree (Base.Church.full_tree Size)
+  let b = Base.Church.true
+  Base.Equal a b
+Main = Base.refl
