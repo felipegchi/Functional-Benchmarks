@@ -17,7 +17,7 @@ main : Equal (is-even (exp C-2 N)) true
 main = refl
 ```
 
-![](image/checker_nat_exp.png)
+![](image/checker_nat_exp_.png)
 
 ## Checker.nat_exp_church
 
@@ -31,7 +31,7 @@ main : Equal (C-is-even (C-exp C-2 N)) C-true
 main = refl
 ```
 
-![](image/checker_nat_exp_church.png)
+![](image/checker_nat_exp_church_.png)
 
 ## Checker.tree_fold
 
@@ -49,7 +49,7 @@ main : Equal (force-tree (full-tree N)) true
 main = refl
 ```
 
-![](image/checker_tree_fold.png)
+![](image/checker_tree_fold_.png)
 
 ## Checker.tree_fold_church
 
@@ -66,7 +66,7 @@ Main : Equal (C-force-tree (C-full-tree N)) C-true
 Main = Base.refl
 ```
 
-![](image/checker_free_fold_church.png)
+![](image/checker_tree_fold_church_.png)
 
 ## Runtime.list_fold
 
@@ -86,7 +86,7 @@ range n xs =
 main = print $ fold (range N Nil) (+) 0
 ```
 
-![](image/runtime_list_fold.png)
+![](image/runtime_list_fold_.png)
 
 ## Runtime.tree_fold
 
@@ -104,7 +104,7 @@ sum (Node a b) = sun a + sun b
 main = sum (gen N)
 ```
 
-![](image/runtime_tree_fold.png)
+![](image/runtime_tree_fold_.png)
 
 
 Replicating

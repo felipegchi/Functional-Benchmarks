@@ -101,7 +101,7 @@ for (let chart in charts) {
 
   (async () => {
       const image = await chartJSNodeCanvas.renderToBuffer(configuration);
-      require("fs").writeFileSync("image/"+chart+".png", image);
+      require("fs").writeFileSync("image/"+chart+"_.png", image);
       //const dataUrl = await chartJSNodeCanvas.renderToDataURL(configuration);
       //const stream = chartJSNodeCanvas.renderToStream(configuration);
   })();
