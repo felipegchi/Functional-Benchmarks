@@ -7,41 +7,58 @@
 inductive Base.Equal : {t: Type u} -> (a: t) -> (b :t) -> Type u where
   | refl : Equal a a
 
+-- Boolean
+-- -------
+
 inductive Base.Bool where
   | tt : Bool
   | ff : Bool
+
+-- Natural Number
+-- --------------
 
 inductive Base.Nat where
   | zero             : Nat
   | succ (pred: Nat) : Nat
 
+-- Binary Tree
+-- -----------
+
 inductive Base.Tree where
   | leaf : Tree
   | node (l: Tree) (r: Tree) : Tree
+
+-- Vector
+-- ------
 
 inductive Base.Vector : Type u -> (len: Nat) -> Type u where
   | cons (head: t) (cons: Vector t len) : Vector t (Nat.succ len)
   | nil : Vector t Nat.zero
 
 -- Church Boolean
+-- --------------
 
 def Base.Church.Bool  : Type (u + 1) := (p: Type u) -> (t: p) -> (f: p) -> p
-def Base.Church.true  : Bool := fun _ => fun t => fun _ => t
-def Base.Church.false : Bool := fun _ => fun _ => fun f => f
+def Base.Church.true  : Bool := fun _ t _ => t
+def Base.Church.false : Bool := fun _ _ f => f
 
--- Church numeral
+-- Church Natural Number
+-- ---------------------
+
 
 def Base.Church.Nat   : Type (u + 1) := (p: Type u) -> (t: p -> p) -> (f: p) -> p
-def Base.Church.zero  : Nat        := fun _ => fun _ => fun z => z
-def Base.Church.succ  : Nat -> Nat := fun n => fun p => fun f => fun z => f (n p f z)
+def Base.Church.zero  : Nat        := fun _ _ z => z
+def Base.Church.succ  : Nat -> Nat := fun n p f z => f (n p f z)
 
--- Church tree
+-- Church Tree
+-- -----------
 
 def Base.Church.Tree : Type (u + 1) := (p: Type u) -> (t: p -> p -> p) -> (f: p) -> p
-def Base.Church.leaf : Tree                    := fun _ => fun _ => fun l => l
-def Base.Church.node (a: Tree) (b: Tree): Tree := fun p => fun n => fun l => n (a p n l) (b p n l)
+def Base.Church.leaf : Tree                    := fun _ _ l => l
+def Base.Church.node (a: Tree) (b: Tree): Tree := fun p n l => n (a p n l) (b p n l)
 
--- Church vector
+-- Church Vector
+-- -------------
 
 def Base.Church.Vector (t: Type) (n: Nat): Type (u + 1) :=
   (p: Nat -> Type)
@@ -49,12 +66,13 @@ def Base.Church.Vector (t: Type) (n: Nat): Type (u + 1) :=
     -> (nil: p Base.Church.zero)
     -> p n
 
-def Base.Church.nil : Vector t Church.zero := fun _ => fun _ => fun nil => nil
+def Base.Church.nil : Vector t Church.zero := fun _ _ nil => nil
 
 def Base.Church.cons (head: t) (tail: Church.Vector t len) : Church.Vector t (Church.succ len) :=
-  fun p => fun cons => fun nil => cons len head (tail p cons nil)
+  fun p cons nil => cons len head (tail p cons nil)
 
 -- Functions
+-- ---------
 
 def Base.not : Base.Bool -> Base.Bool
   | Base.Bool.tt => Base.Bool.ff
@@ -96,16 +114,16 @@ def Base.force_tree (t: Base.Tree) : Base.Bool :=
   Base.tree_fold t Base.Bool Base.and Base.Bool.tt
 
 def Base.Church.not (b: Base.Church.Bool): Base.Church.Bool :=
-  fun p => fun t => fun f => b p f t
+  fun p t f => b p f t
 
 def Base.Church.and (a: Base.Church.Bool) (b: Base.Church.Bool): Base.Church.Bool :=
-  fun p => fun t => fun f => a p (b p t f) f
+  fun p t f => a p (b p t f) f
 
 def Base.Church.add (a: Base.Church.Nat) (b: Base.Church.Nat): Base.Church.Nat :=
-  fun p => fun s => fun z => a p s (b p s z)
+  fun p s z => a p s (b p s z)
 
 def Base.Church.mul (a: Base.Church.Nat) (b: Base.Church.Nat): Base.Church.Nat :=
-  fun p => fun s => a p (b p s)
+  fun p s => a p (b p s)
 
 def Base.Church.exp (a: Base.Church.Nat) (b: Base.Church.Nat): Base.Church.Nat :=
   fun p => b (p -> p) (a p)
@@ -118,7 +136,10 @@ def Base.Church.full_tree (d: Base.Church.Nat): Base.Church.Tree := fun p n l =>
 def Base.Church.tree_fold (a: Base.Church.Tree) (p: Type (u+1)) (n: p -> p -> p) (l: p) : p := a p n l
 
 def Base.Church.force_tree (t: Base.Church.Tree) : Base.Church.Bool :=
-  Base.Church.tree_fold t Base.Church.Bool (fun a => fun b => Base.Church.and a b) (Base.Church.true)
+  Base.Church.tree_fold t Base.Church.Bool (fun a b => Base.Church.and a b) (Base.Church.true)
+
+-- Constants
+-- =========
 
 def Base.N0  : Base.Nat := Base.Nat.zero
 def Base.N1  : Base.Nat := Base.Nat.succ Base.N0

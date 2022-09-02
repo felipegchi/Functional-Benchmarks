@@ -136,6 +136,8 @@ Definition church_tree_fold (t: Church_Tree) (p: Type) (n: p -> p -> p) (l: p): 
 Definition church_force_tree (d: Church_Tree): Church_Bool :=
   church_tree_fold d Church_Bool church_and church_true.
 
+(* Constants *)
+
 Definition Base_N0  : Nat := Zero.
 Definition Base_N1  : Nat := Succ Base_N0.
 Definition Base_N2  : Nat := Succ Base_N1.

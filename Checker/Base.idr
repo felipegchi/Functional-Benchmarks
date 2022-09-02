@@ -1,13 +1,31 @@
 module Base
 
+-- Types
+-- =====
+
+-- Equality
+-- --------
+
 data Equal : {t: Type} -> (a: t) -> (b: t) -> Type where
   Refl : Equal a a
 
+-- Boolean
+-- -------
+
 data Bool = True | False
+
+-- Natural Number
+-- --------------
 
 data Nat = Zero | Suc Base.Nat
 
+-- Binary Tree
+-- -----------
+
 data Tree = Leaf | Node Tree Tree
+
+-- Vector
+-- ------
 
 data Vector : (t: Type) -> (len: Base.Nat) -> Type where
   Cons : (head: t) -> (tail: Vector t len) -> Vector t (Suc len)
@@ -106,31 +124,34 @@ forceTree : Base.Tree -> Base.Bool
 forceTree t = treeFold t Base.Bool (\a => \b => and a b) True
 
 church_not : Church_Bool -> Church_Bool
-church_not b = \p => \t => \f => b p f t
+church_not b p t f = b p f t
 
 church_and : Church_Bool -> Church_Bool -> Church_Bool
-church_and a b = \p => \t => \f => a p (b p t f) f
+church_and a b p t f = a p (b p t f) f
 
 church_add : Church_Nat -> Church_Nat -> Church_Nat
-church_add a b = \p => \f => \z => a p f (b p f z)
+church_add a b p f z = a p f (b p f z)
 
 church_mul : Church_Nat -> Church_Nat -> Church_Nat
-church_mul a b = \p => \f => a p (b p f)
+church_mul a b p f = a p (b p f)
 
 church_exp : Church_Nat -> Church_Nat -> Church_Nat
-church_exp a b = \p => b (p -> p) (a p)
+church_exp a b p = b (p -> p) (a p)
 
 church_is_even : Church_Nat -> Church_Bool
 church_is_even a = a Church_Bool (\x => church_not x) church_true
 
 church_full_tree : Church_Nat -> Church_Tree
-church_full_tree k = \p => \n => \l => k p (\t => n t t) l
+church_full_tree k p n l = k p (\t => n t t) l
 
 church_tree_fold : Church_Tree -> (p: Type) -> (n: p -> p -> p) -> (l: p) -> p
 church_tree_fold t p n l = t p n l
 
 church_force_tree : Church_Tree -> Church_Bool
 church_force_tree t = church_tree_fold t Church_Bool (\a => \b => church_and a b) church_true
+
+-- Constants
+-- =========
 
 N0 : Base.Nat
 N0 = Zero
