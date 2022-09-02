@@ -10,7 +10,7 @@ var langs = {
       run: true,
       tasks: {
         list_fold: [1,64],
-        tree_fold: [16,32],
+        tree_fold: [26,32],
       },
       build: (task) => {
         save("main.hs", load("Runtime/"+task+".hs"));
@@ -33,7 +33,7 @@ var langs = {
       run: true,
       tasks: {
         list_fold: [1,64],
-        tree_fold: [16,32],
+        tree_fold: [26,32],
       },
       build: (task) => {
         save("main.kind2", load("Runtime/"+task+".kind2"));
