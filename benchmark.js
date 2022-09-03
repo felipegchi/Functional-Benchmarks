@@ -3,11 +3,18 @@ var exec_sync = require("child_process").execSync;
 
 var SMALL = false;
 
+var run = [
+  "haskell",
+  "kind2",
+  "agda",
+  "idris",
+  "coq",
+];
+
 var langs = {
 
   haskell: {
     runtime: {
-      run: true,
       tasks: {
         list_fold: [1,64],
         tree_fold: [26,32],
@@ -30,7 +37,6 @@ var langs = {
 
   kind2: {
     runtime: {
-      run: true,
       tasks: {
         list_fold: [1,64],
         tree_fold: [26,32],
@@ -52,9 +58,8 @@ var langs = {
       },
     },
     checker: {
-      run: true,
       tasks: {
-        nat_exp: [10,14],
+        nat_exp: [10,15],
         nat_exp_church: [16,24],
         tree_fold: [16,24],
         tree_fold_church: [16,24],
@@ -81,7 +86,6 @@ var langs = {
 
   agda: {
     checker: {
-      run: true,
       tasks: {
         nat_exp: [10,14],
         nat_exp_church: [16,24],
@@ -108,6 +112,54 @@ var langs = {
     }
   },
 
+  idris: {
+    checker: {
+      tasks: {
+        nat_exp: [10,13],
+        nat_exp_church: [16,21],
+        tree_fold: [16,24],
+        tree_fold_church: [16,21],
+      },
+      build: (task) => {
+        save("Base.idr", load("Checker/Base.idr"));
+      },
+      bench: (task, size) => {
+        var code = load("Checker/"+task+".idr");
+        code = code.replace("Size = Base.N1", "Size = Base.N" + size);
+        code = code.replace("Size = Base.Church_N1", "Size = Base.Church_N" + size);
+        code = repeat(code, "--REPEAT", 2 ** size);
+        save("main.idr", code);
+        return bench("idris2 main.idr -c");
+      },
+      clean: () => {
+      },
+    }
+  },
+
+  coq: {
+    checker: {
+      tasks: {
+        nat_exp: [10,15],
+        nat_exp_church: [16,24],
+        tree_fold: [16,24],
+        tree_fold_church: [16,24],
+      },
+      build: (task) => {
+        save("Base.v", load("Checker/Base.v"));
+      },
+      bench: (task, size) => {
+        var code = load("Checker/"+task+".v");
+        code = code.replace("Definition Size : Base.Nat := Base.N1 .", "Definition Size : Base.Nat := Base.N" + size + " .");
+        code = code.replace("Definition Size : Base.Church_Nat := Base.Church_N1 .", "Definition Size : Base.Church_Nat := Base.Church_N" + size + " .");
+        code = repeat(code, "--REPEAT", 2 ** size);
+        save("main.v", code);
+        return bench("coqc main.v");
+      },
+      clean: () => {
+      },
+    }
+  },
+
 };
 
 for (var name in langs) {
@@ -118,24 +170,22 @@ for (var name in langs) {
 
 var results = [];
 
-for (var lang in langs) {
+for (var lang of run) {
   for (var kind in langs[lang]) {
     for (var task in langs[lang][kind].tasks) {
-      if (langs[lang][kind].run) {
-        langs[lang][kind].clean(task);
-        langs[lang][kind].build(task);
-        var min_size = langs[lang][kind].tasks[task][0];
-        var max_size = SMALL ? min_size + 2 : langs[lang][kind].tasks[task][1];
-        for (var size = min_size; size <= max_size; ++size) {
-          if (size === min_size) {
-            langs[lang][kind].bench(task, size); // dry-run to heat up
-          }
-          var time = langs[lang][kind].bench(task, size);
-          results.push([kind, task, lang, size, time]);
-          console.log(kind + " | " + task + " | " + lang + " | " + size + " | " + time.toFixed(3) + "s");
+      langs[lang][kind].clean(task);
+      langs[lang][kind].build(task);
+      var min_size = langs[lang][kind].tasks[task][0];
+      var max_size = SMALL ? min_size + 2 : langs[lang][kind].tasks[task][1];
+      for (var size = min_size; size <= max_size; ++size) {
+        if (size === min_size) {
+          langs[lang][kind].bench(task, size); // dry-run to heat up
         }
-        langs[lang][kind].clean(task);
+        var time = langs[lang][kind].bench(task, size);
+        results.push([kind, task, lang, size, time]);
+        console.log(kind + " | " + task + " | " + lang + " | " + size + " | " + time.toFixed(3) + "s");
       }
+      langs[lang][kind].clean(task);
     }
   }
 }

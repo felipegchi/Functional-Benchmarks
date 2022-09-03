@@ -3,8 +3,5 @@ Import { Base }
 Size : Base.Nat
 Size = Base.N1
 
-Main :
-  let a = Base.force_tree (Base.full_tree Size)
-  let b = Base.true
-  Base.Equal a b
+Main : Base.Equal (Base.force_tree (Base.full_tree Size)) Base.true
 Main = Base.refl

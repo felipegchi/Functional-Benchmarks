@@ -3,8 +3,5 @@ Import { Base }
 Size : Base.Nat
 Size = Base.N1
 
-Main :
-  let a = Base.is_even (Base.exp Base.N2 Size)
-  let b = Base.true
-  Base.Equal a b
+Main : Base.Equal (Base.is_even (Base.exp Base.N2 Size)) Base.true
 Main = Base.refl
