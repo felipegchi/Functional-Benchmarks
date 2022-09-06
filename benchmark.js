@@ -4,11 +4,7 @@ var exec_sync = require("child_process").execSync;
 var SMALL = false;
 
 var run = [
-  "haskell",
-  "kind2",
-  "agda",
-  "idris",
-  "coq",
+  "lean",
 ];
 
 var langs = {
@@ -115,10 +111,10 @@ var langs = {
   idris: {
     checker: {
       tasks: {
-        nat_exp: [10,13],
-        nat_exp_church: [16,21],
-        tree_fold: [16,24],
-        tree_fold_church: [16,21],
+        nat_exp: [10,11],
+        nat_exp_church: [16,17],
+        tree_fold: [16,17],
+        tree_fold_church: [16,17],
       },
       build: (task) => {
         save("Base.idr", load("Checker/Base.idr"));
@@ -160,6 +156,30 @@ var langs = {
     }
   },
 
+  lean: {
+    checker: {
+      tasks: {
+        nat_exp: [10,11],
+        nat_exp_church: [16,17],
+        tree_fold: [16,17],
+        tree_fold_church: [16,17],
+      },
+      build: (task) => {
+      },
+      bench: (task, size) => {
+        var code = load("Checker/"+task+".lean");
+        var base = load("Checker/Base.lean");
+        code = code.replace("Size : Base.Nat := Base.N1", "Size : Base.Nat := Base.N" + size);
+        code = code.replace("Size : Base.Church.Nat := Base.Church.N1", "Size : Base.Church.Nat := Base.Church.N" + size);
+        code = repeat(code, "--REPEAT", 2 ** size);
+        code = base + "\n---\n" + code;
+        save("main.lean", code);
+        return bench("lean main.lean");
+      },
+      clean: () => {
+      },
+    }
+  },
 };
 
 for (var name in langs) {
@@ -198,7 +218,7 @@ function exec(str) {
   } catch (e) {
     console.log(e.stdout.toString());
     console.log(e.stderr.toString());
-    process.exit();
+    return Infinity;
   }
 }
 
@@ -230,7 +250,7 @@ function repeat(code, label, size) {
 function bench(cmd) {
   var ini = Date.now();
   var res = exec(cmd, {skipThrow: 1}).toString().replace(/\n/g,"");
-  //console.log(">> done: " + res);
+  if (res == Infinity) { return Infinity }
   var end = Date.now();
   return (end - ini) / 1000;
 }
