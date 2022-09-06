@@ -164,10 +164,10 @@ var langs = {
   lean: {
     checker: {
       tasks: {
-        nat_exp: [10,11],
-        nat_exp_church: [16,17],
-        tree_fold: [16,17],
-        tree_fold_church: [16,17],
+        nat_exp: [10,14],
+        nat_exp_church: [16,24],
+        tree_fold: [16,24],
+        tree_fold_church: [16,24],
       },
       build: (task) => {
       },
