@@ -4,6 +4,11 @@ var exec_sync = require("child_process").execSync;
 var SMALL = false;
 
 var run = [
+  "haskell",
+  "kind2",
+  "agda",
+  "idris",
+  "coq",
   "lean",
 ];
 
@@ -111,10 +116,10 @@ var langs = {
   idris: {
     checker: {
       tasks: {
-        nat_exp: [10,11],
-        nat_exp_church: [16,17],
-        tree_fold: [16,17],
-        tree_fold_church: [16,17],
+        nat_exp: [10,13],
+        nat_exp_church: [16,21],
+        tree_fold: [16,24],
+        tree_fold_church: [16,21],
       },
       build: (task) => {
         save("Base.idr", load("Checker/Base.idr"));
@@ -250,6 +255,7 @@ function repeat(code, label, size) {
 function bench(cmd) {
   var ini = Date.now();
   var res = exec(cmd, {skipThrow: 1}).toString().replace(/\n/g,"");
+  //console.log(">> done: " + res);
   if (res == Infinity) { return Infinity }
   var end = Date.now();
   return (end - ini) / 1000;
