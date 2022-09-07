@@ -13,12 +13,12 @@ var run = [
 ];
 
 let allowed_tests = {
-  list_fold: false,
-  nat_exp: false,
-  nat_exp_church: false,
-  tree_fold_church: false,
+  list_fold: true,
+  nat_exp: true,
+  nat_exp_church: true,
+  tree_fold_church: true,
   vector: true,
-  quicksort: false,
+  quicksort: true,
   composition: true,
 }
 
@@ -276,7 +276,7 @@ function repeat(code, label, size) {
 function bench(cmd) {
   var ini = Date.now();
   var res = exec(cmd, {skipThrow: 1}).toString().replace(/\n/g,"");
-  console.log(">> done: " + res);
+  //console.log(">> done: " + res.substring(0, 100));
   if (res == Infinity) { return Infinity }
   var end = Date.now();
   return (end - ini) / 1000;
