@@ -4,13 +4,20 @@ var exec_sync = require("child_process").execSync;
 var SMALL = false;
 
 var run = [
-  "haskell",
   "kind2",
   "agda",
   "idris",
   "coq",
   "lean",
 ];
+
+let allowed_tests = {
+  list_fold: false,
+  nat_exp: false,
+  nat_exp_church: false,
+  tree_fold_church: false,
+  vector: true,
+}
 
 var langs = {
 
@@ -64,6 +71,7 @@ var langs = {
         nat_exp_church: [16,24],
         tree_fold: [16,24],
         tree_fold_church: [16,24],
+        vector: [1, 4],
       },
       build: (task) => {
         save("Base.kind2", load("Checker/Base.kind2"));
@@ -92,6 +100,7 @@ var langs = {
         nat_exp_church: [16,24],
         tree_fold: [16,24],
         tree_fold_church: [16,24],
+        vector: [1,4],
       },
       build: (task) => {
         save("Base.agda", load("Checker/Base.agda"));
@@ -120,6 +129,7 @@ var langs = {
         nat_exp_church: [16,21],
         tree_fold: [16,24],
         tree_fold_church: [16,21],
+        vector: [1, 4],
       },
       build: (task) => {
         save("Base.idr", load("Checker/Base.idr"));
@@ -144,6 +154,7 @@ var langs = {
         nat_exp_church: [16,24],
         tree_fold: [16,24],
         tree_fold_church: [16,24],
+        vector: [1, 4],
       },
       build: (task) => {
         save("Base.v", load("Checker/Base.v"));
@@ -152,7 +163,7 @@ var langs = {
         var code = load("Checker/"+task+".v");
         code = code.replace("Definition Size : Base.Nat := Base.N1 .", "Definition Size : Base.Nat := Base.N" + size + " .");
         code = code.replace("Definition Size : Base.Church_Nat := Base.Church_N1 .", "Definition Size : Base.Church_Nat := Base.Church_N" + size + " .");
-        code = repeat(code, "--REPEAT", 2 ** size);
+        code = repeat(code, "(* REPEAT *)", 2 ** size);
         save("main.v", code);
         return bench("coqc main.v");
       },
@@ -168,6 +179,7 @@ var langs = {
         nat_exp_church: [16,24],
         tree_fold: [16,24],
         tree_fold_church: [16,24],
+        vector: [1, 4],
       },
       build: (task) => {
       },
@@ -198,6 +210,8 @@ var results = [];
 for (var lang of run) {
   for (var kind in langs[lang]) {
     for (var task in langs[lang][kind].tasks) {
+      if(!allowed_tests[task]) continue;
+
       langs[lang][kind].clean(task);
       langs[lang][kind].build(task);
       var min_size = langs[lang][kind].tasks[task][0];
