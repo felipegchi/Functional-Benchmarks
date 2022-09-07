@@ -4,6 +4,7 @@ var exec_sync = require("child_process").execSync;
 var SMALL = false;
 
 var run = [
+  "haskell",
   "kind2",
   "agda",
   "idris",
@@ -17,6 +18,8 @@ let allowed_tests = {
   nat_exp_church: false,
   tree_fold_church: false,
   vector: true,
+  quicksort: false,
+  composition: true,
 }
 
 var langs = {
@@ -26,6 +29,8 @@ var langs = {
       tasks: {
         list_fold: [1,64],
         tree_fold: [26,32],
+        quicksort: [0, 15],
+        composition: [10, 32],
       },
       build: (task) => {
         save("main.hs", load("Runtime/"+task+".hs"));
@@ -48,6 +53,8 @@ var langs = {
       tasks: {
         list_fold: [1,64],
         tree_fold: [26,32],
+        quicksort: [0, 15],
+        composition: [10, 32],
       },
       build: (task) => {
         save("main.kind2", load("Runtime/"+task+".kind2"));
@@ -269,7 +276,7 @@ function repeat(code, label, size) {
 function bench(cmd) {
   var ini = Date.now();
   var res = exec(cmd, {skipThrow: 1}).toString().replace(/\n/g,"");
-  //console.log(">> done: " + res);
+  console.log(">> done: " + res);
   if (res == Infinity) { return Infinity }
   var end = Date.now();
   return (end - ini) / 1000;
